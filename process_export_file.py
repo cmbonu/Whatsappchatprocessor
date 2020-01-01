@@ -108,6 +108,28 @@ chat_activity_by_day_mnth = df_chat_messages.groupby(by=['activity_month'])\
 chat_activity_by_day_mnth.columns = ['activity_month','chat_count','unique_members']
 chat_activity_by_day_mnth.to_csv('mnthchat.csv')
 
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+from nltk.corpus import stopwords 
+from nltk.tokenize import word_tokenize
+
+stop_words = list(stopwords.words('english'))
+addins = ['lmao','dey','https','http','media','ommitted','ommitted media','na','us','n''t','go','lol','see','something',\
+    'know','still','let','well','much','make','sha','even','one']
+stop_words.extend(addins)
+#Word CLoud
+#bcolor="#282D36"
+bcolor="white"
+text = ' '.join([x.lower().replace("\n", " ") for x in df_chat_messages['message'] if 'media omitted' not in x.lower()])
+word_tokens = text.split(' ')#word_tokenize(text) 
+filtered_sentence = [w for w in word_tokens if w not in stop_words and 'http' not in w]
+wordcloud = WordCloud(max_font_size=80, max_words=100,background_color=bcolor,margin=0,\
+                    width=800, height=400).generate(' '.join(filtered_sentence))
+fig = plt.figure(frameon=False,facecolor=bcolor,figsize=(20,10))
+plt.imshow(wordcloud)
+plt.axis("off")
+plt.savefig("wordcount.png",bbox_inches='tight',pad_inches=0.1,transparent=True,dpi=800)
+
+
 df_new_members = pd.DataFrame(tmp_new_members,columns=['admin','member','add_date','comment'])
 
 #Group Stats
